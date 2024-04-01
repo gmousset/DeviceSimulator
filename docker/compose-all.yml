@@ -1,0 +1,8 @@
+version: "3.7"
+services:
+  leshan-server:
+    build: ./leshanserver/
+    ports:
+      - "8080:8080"
+      - "5683:5683/udp"
+      - "5684:5684/udp"
