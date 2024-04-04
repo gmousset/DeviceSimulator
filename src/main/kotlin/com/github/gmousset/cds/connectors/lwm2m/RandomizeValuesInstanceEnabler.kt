@@ -13,7 +13,10 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
 
     private val groupMin = "min"
     private val groupMax = "max"
-    private val rangeRegex = """(?<$groupMin>\d+)..(?<$groupMax>\d+)""".toRegex()
+    private val intRangeRegex = """(?<${groupMin}>\d+)\.\.(?<$groupMax>\d+)""".toRegex()
+    private val floatRangeRegex = """(?<${groupMin}>\d+.\d+)\.\.(?<$groupMax>\d+.\d+)""".toRegex()
+    private val intEnumRegex = """(?<${groupMin}>\d+)\w*,\w*(?<$groupMax>\d+)""".toRegex()
+    private val floatEnumRegex = """(?<${groupMin}>\d+.\d+)\w*,\w*(?<$groupMax>\d+.\d+)""".toRegex()
 
     override fun read(
         server: LwM2mServer?,
@@ -40,14 +43,13 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
         return if (isEnum(model)) {
             enumValues(model).random()
         } else {
-            RandomStringUtils.randomAlphabetic(7, 12)
+            RandomStringUtils.randomAlphabetic(10)
         }
     }
 
     private fun getBooleanValue() = Math.random() > .5
 
     private fun getTimeValue(): Date {
-
         val time = ThreadLocalRandom.current().nextLong(
             System.currentTimeMillis() - (3600L * 24 * 30 * 1000),
             System.currentTimeMillis()
@@ -59,23 +61,24 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
 
     private fun getIntValue(
         model: ResourceModel
-    ): Long {
-        return getFloatValue(model).toLong()
+    ): Long = when {
+        isIntRange(model) -> {
+            val range = intRange(model)
+            ThreadLocalRandom.current().nextLong(range.first, range.second)
+        }
+        isEnum(model) -> enumValues(model).map { str -> str.toLong() }.random()
+        else -> (Math.random() * 100).toLong()
     }
 
     private fun getFloatValue(
         model: ResourceModel
-    ): Double {
-        return if (isRange(model)) {
-            val range = range(model)
-            if (range != null) {
-                (Math.random() * (range.second + 1) + range.first)
-            } else {
-                (Math.random() * 100)
-            }
-        } else {
-            (Math.random() * 100)
+    ): Double = when {
+        isFloatRange(model) -> {
+            val range = floatRange(model)
+            ThreadLocalRandom.current().nextDouble(range.first, range.second)
         }
+        isEnum(model) -> enumValues(model).map { str -> str.toDouble() }.random()
+        else -> Math.random() * 100
     }
 
     private fun isEnum(
@@ -91,31 +94,50 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
         return model.rangeEnumeration.split(",").map { s -> s.trim() }
     }
 
-    private fun isRange(
+    private fun isIntRange(
         model: ResourceModel
+    ) = isRange(model, intRangeRegex)
+
+    private fun isFloatRange(
+        model: ResourceModel
+    ) = isRange(model, floatRangeRegex)
+
+    private fun isRange(
+        model: ResourceModel,
+        regex: Regex
     ): Boolean {
         val rangeEnumeration = model.rangeEnumeration
         return if (rangeEnumeration != null) {
-            rangeRegex.matches(rangeEnumeration)
+            regex.matches(rangeEnumeration)
         } else {
             false
         }
     }
 
-    private fun range(
+    private fun intRange(
         model: ResourceModel
-    ): Pair<Double, Double>? {
-        val result = rangeRegex.matchEntire(model.rangeEnumeration)
+    ): Pair<Long, Long>  = range(model = model, regex = intRangeRegex, converter = { it.toLong() })
+
+    private fun floatRange(
+        model: ResourceModel
+    ): Pair<Double, Double> = range(model = model, regex = floatRangeRegex, converter = { it.toDouble() })
+
+    private fun <T> range(
+        model: ResourceModel,
+        regex: Regex,
+        converter: (String) -> T
+    ): Pair<T, T> {
+        val result = regex.matchEntire(model.rangeEnumeration)
         return if (result != null) {
-            val min = result.groups[groupMin]?.value?.toDouble()
-            val max = result.groups[groupMax]?.value?.toDouble()
+            val min = result.groups[groupMin]?.value?.let { converter(it) }
+            val max = result.groups[groupMax]?.value?.let { converter(it) }
             if (min != null && max != null) {
                 Pair(min, max)
             } else {
-                null
+                throw Exception("unexpected range")
             }
         } else {
-            null
+            throw Exception("unexpected range")
         }
     }
 }

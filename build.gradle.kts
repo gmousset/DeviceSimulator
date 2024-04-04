@@ -14,6 +14,7 @@ dependencies {
     implementation("org.eclipse.leshan:leshan-tl-javacoap-client:2.0.0-M14")
     implementation("org.apache.commons:commons-lang3:3.14.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("io.mockk:mockk:1.13.10")
 }
 
 tasks.test {
