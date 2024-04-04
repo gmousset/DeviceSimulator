@@ -11,6 +11,12 @@ import java.util.concurrent.ThreadLocalRandom
 
 open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
 
+    companion object {
+        private const val STRING_SIZE = 10
+        private const val OPAQUE_LENGTH = 100
+        private const val MAX_IN_PAST = 3600L * 24 * 30 * 1000
+    }
+
     private val groupMin = "min"
     private val groupMax = "max"
     private val intRangeRegex = """(?<${groupMin}>\d+)\.\.(?<$groupMax>\d+)""".toRegex()
@@ -43,7 +49,7 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
         return if (isEnum(model)) {
             enumValues(model).random()
         } else {
-            RandomStringUtils.randomAlphabetic(10)
+            RandomStringUtils.randomAlphabetic(STRING_SIZE)
         }
     }
 
@@ -51,13 +57,13 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
 
     private fun getTimeValue(): Date {
         val time = ThreadLocalRandom.current().nextLong(
-            System.currentTimeMillis() - (3600L * 24 * 30 * 1000),
+            System.currentTimeMillis() - MAX_IN_PAST,
             System.currentTimeMillis()
         )
         return Date(time)
     }
 
-    private fun getOpaqueValue(): ByteArray = RandomStringUtils.randomAlphabetic(100).toByteArray()
+    private fun getOpaqueValue() = RandomStringUtils.randomAlphabetic(OPAQUE_LENGTH).toByteArray()
 
     private fun getIntValue(
         model: ResourceModel
@@ -66,8 +72,8 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
             val range = intRange(model)
             ThreadLocalRandom.current().nextLong(range.first, range.second)
         }
-        isEnum(model) -> enumValues(model).map { str -> str.toLong() }.random()
-        else -> (Math.random() * 100).toLong()
+        isEnum(model) -> enumValues(model).map { it.toLong() }.random()
+        else -> (Math.random() * Long.MAX_VALUE).toLong()
     }
 
     private fun getFloatValue(
@@ -77,8 +83,8 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
             val range = floatRange(model)
             ThreadLocalRandom.current().nextDouble(range.first, range.second)
         }
-        isEnum(model) -> enumValues(model).map { str -> str.toDouble() }.random()
-        else -> Math.random() * 100
+        isEnum(model) -> enumValues(model).map { it.toDouble() }.random()
+        else -> Math.random() * Float.MAX_VALUE
     }
 
     private fun isEnum(
@@ -91,7 +97,7 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
     private fun enumValues(
         model: ResourceModel
     ): List<String> {
-        return model.rangeEnumeration.split(",").map { s -> s.trim() }
+        return model.rangeEnumeration.split(",").map { it.trim() }
     }
 
     private fun isIntRange(

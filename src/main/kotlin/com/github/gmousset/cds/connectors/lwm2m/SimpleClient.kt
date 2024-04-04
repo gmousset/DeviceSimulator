@@ -20,9 +20,13 @@ class SimpleClient(
     val endpoint: String,
     val server: String
 ) {
+
+    companion object {
+        private const val SERVER_ID  = 123
+        private const val SESSION_LIFETIME = 3600L
+    }
+
     private val serverUri = URI(server)
-    private val serverId  = 123
-    private val sessionLifetime = 3600L
 
     fun connect() {
         val endpointsProviderBuilder = CaliforniumClientEndpointsProvider.Builder()
@@ -36,8 +40,8 @@ class SimpleClient(
         val objectModels = ObjectLoader.loadAllDefault()
         val repository = LwM2mModelRepository(objectModels)
         val objectsInitializer = ObjectsInitializer(repository.lwM2mModel)
-        objectsInitializer.setInstancesForObject(SECURITY, Security.noSec(server, serverId))
-        objectsInitializer.setInstancesForObject(SERVER, Server(serverId, sessionLifetime))
+        objectsInitializer.setInstancesForObject(SECURITY, Security.noSec(server, SERVER_ID))
+        objectsInitializer.setInstancesForObject(SERVER, Server(SERVER_ID, SESSION_LIFETIME))
         objectsInitializer.setInstancesForObject(DEVICE, MyDevice())
         objectsInitializer.setInstancesForObject(LOCATION, RandomizeValuesInstanceEnabler())
         val objectEnablers = objectsInitializer.createAll()

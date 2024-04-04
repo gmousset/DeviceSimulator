@@ -5,8 +5,6 @@ plugins {
 group = "com.github.gmousset"
 version = "1.0.0-SNAPSHOT"
 
-val javaVersion = 20
-
 repositories {
     mavenCentral()
 }
@@ -23,5 +21,5 @@ tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(javaVersion)
+    jvmToolchain(20)
 }
