@@ -5,13 +5,16 @@ import org.eclipse.leshan.core.response.ReadResponse
 
 class MyDevice : RandomizeValuesInstanceEnabler() {
 
+    companion object {
+        private const val SUPPORTED_BINDING_AND_MODES = 16
+    }
     override fun read(
         server: LwM2mServer?,
         resourceId: Int
     ): ReadResponse {
         println("ask read for ${this.model.id} $resourceId")
         val response = when (resourceId) {
-            16 -> ReadResponse.success(resourceId, "U")
+            SUPPORTED_BINDING_AND_MODES -> ReadResponse.success(resourceId, "U")
             else -> super.read(server, resourceId)
         }
         return response

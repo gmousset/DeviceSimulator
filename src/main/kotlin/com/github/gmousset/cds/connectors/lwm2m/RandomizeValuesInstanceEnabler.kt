@@ -1,5 +1,6 @@
 package com.github.gmousset.cds.connectors.lwm2m
 
+import com.github.gmousset.cds.connectors.lwm2m.exception.RangeEnumerationException
 import org.apache.commons.lang3.RandomStringUtils
 import org.eclipse.leshan.client.resource.BaseInstanceEnabler
 import org.eclipse.leshan.client.servers.LwM2mServer
@@ -21,8 +22,6 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
     private val groupMax = "max"
     private val intRangeRegex = """(?<${groupMin}>\d+)\.\.(?<$groupMax>\d+)""".toRegex()
     private val floatRangeRegex = """(?<${groupMin}>\d+.\d+)\.\.(?<$groupMax>\d+.\d+)""".toRegex()
-    private val intEnumRegex = """(?<${groupMin}>\d+)\w*,\w*(?<$groupMax>\d+)""".toRegex()
-    private val floatEnumRegex = """(?<${groupMin}>\d+.\d+)\w*,\w*(?<$groupMax>\d+.\d+)""".toRegex()
 
     override fun read(
         server: LwM2mServer?,
@@ -45,15 +44,13 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
 
     private fun getStringValue(
         model: ResourceModel
-    ): String {
-        return if (isEnum(model)) {
-            enumValues(model).random()
-        } else {
-            RandomStringUtils.randomAlphabetic(STRING_SIZE)
-        }
+    ): String = if (isEnum(model)) {
+        stringEnumValues(model).random()
+    } else {
+        RandomStringUtils.randomAlphabetic(STRING_SIZE)
     }
 
-    private fun getBooleanValue() = Math.random() > .5
+    private fun getBooleanValue(): Boolean = ThreadLocalRandom.current().nextBoolean()
 
     private fun getTimeValue(): Date {
         val time = ThreadLocalRandom.current().nextLong(
@@ -63,7 +60,7 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
         return Date(time)
     }
 
-    private fun getOpaqueValue() = RandomStringUtils.randomAlphabetic(OPAQUE_LENGTH).toByteArray()
+    private fun getOpaqueValue(): ByteArray = RandomStringUtils.randomAlphabetic(OPAQUE_LENGTH).toByteArray()
 
     private fun getIntValue(
         model: ResourceModel
@@ -72,7 +69,7 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
             val range = intRange(model)
             ThreadLocalRandom.current().nextLong(range.first, range.second)
         }
-        isEnum(model) -> enumValues(model).map { it.toLong() }.random()
+        isEnum(model) -> intEnumValues(model).random()
         else -> (Math.random() * Long.MAX_VALUE).toLong()
     }
 
@@ -83,7 +80,7 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
             val range = floatRange(model)
             ThreadLocalRandom.current().nextDouble(range.first, range.second)
         }
-        isEnum(model) -> enumValues(model).map { it.toDouble() }.random()
+        isEnum(model) -> floatEnumValues(model).random()
         else -> Math.random() * Float.MAX_VALUE
     }
 
@@ -94,21 +91,32 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
         return rangeEnumeration?.contains(",") ?: false
     }
 
-    private fun enumValues(
+    private fun stringEnumValues(
         model: ResourceModel
-    ): List<String> {
-        return model.rangeEnumeration.split(",").map { it.trim() }
-    }
+    ): List<String> = enumValues(model = model, converter = { it })
+
+    private fun intEnumValues(
+        model: ResourceModel
+    ): List<Long> = enumValues(model = model, converter = { it.toLong() })
+
+    private fun floatEnumValues(
+        model: ResourceModel
+    ): List<Double> = enumValues(model = model, converter = { it.toDouble() })
+
+    private fun <T> enumValues(
+        model: ResourceModel,
+        converter: (String) -> T
+    ): List<T> = model.rangeEnumeration.split(",").map { it.trim() }.map { converter(it) }
 
     private fun isIntRange(
         model: ResourceModel
-    ) = isRange(model, intRangeRegex)
+    ): Boolean = isRangeEnumeration(model, intRangeRegex)
 
     private fun isFloatRange(
         model: ResourceModel
-    ) = isRange(model, floatRangeRegex)
+    ): Boolean = isRangeEnumeration(model, floatRangeRegex)
 
-    private fun isRange(
+    private fun isRangeEnumeration(
         model: ResourceModel,
         regex: Regex
     ): Boolean {
@@ -140,10 +148,10 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
             if (min != null && max != null) {
                 Pair(min, max)
             } else {
-                throw Exception("unexpected range")
+                throw RangeEnumerationException(model.rangeEnumeration)
             }
         } else {
-            throw Exception("unexpected range")
+            throw RangeEnumerationException(model.rangeEnumeration)
         }
     }
 }
