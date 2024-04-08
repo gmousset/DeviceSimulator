@@ -8,6 +8,7 @@ class MyDevice : RandomizeValuesInstanceEnabler() {
     companion object {
         private const val SUPPORTED_BINDING_AND_MODES = 16
     }
+
     override fun read(
         server: LwM2mServer?,
         resourceId: Int

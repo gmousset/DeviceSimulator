@@ -28,7 +28,7 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
         resourceId: Int
     ): ReadResponse {
         println("ask read for ${this.model.id} $resourceId")
-        
+
         val resourceModel = this.model.resources[resourceId]
         val response = when (resourceModel?.type) {
             Type.STRING -> ReadResponse.success(resourceId, getStringValue(resourceModel))
@@ -69,6 +69,7 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
             val range = intRange(model)
             ThreadLocalRandom.current().nextLong(range.first, range.second)
         }
+
         isEnum(model) -> intEnumValues(model).random()
         else -> (Math.random() * Long.MAX_VALUE).toLong()
     }
@@ -80,6 +81,7 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
             val range = floatRange(model)
             ThreadLocalRandom.current().nextDouble(range.first, range.second)
         }
+
         isEnum(model) -> floatEnumValues(model).random()
         else -> Math.random() * Float.MAX_VALUE
     }
@@ -130,7 +132,7 @@ open class RandomizeValuesInstanceEnabler : BaseInstanceEnabler() {
 
     private fun intRange(
         model: ResourceModel
-    ): Pair<Long, Long>  = range(model = model, regex = intRangeRegex, converter = { it.toLong() })
+    ): Pair<Long, Long> = range(model = model, regex = intRangeRegex, converter = { it.toLong() })
 
     private fun floatRange(
         model: ResourceModel

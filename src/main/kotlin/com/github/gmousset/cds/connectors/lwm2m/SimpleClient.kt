@@ -22,7 +22,7 @@ class SimpleClient(
 ) {
 
     companion object {
-        private const val SERVER_ID  = 123
+        private const val SERVER_ID = 123
         private const val SESSION_LIFETIME = 3600L
     }
 
