@@ -1,6 +1,6 @@
 package com.github.gmousset.cds
 
-import com.github.gmousset.cds.connectors.lwm2m.SimpleClient
+import com.github.gmousset.cds.connectors.lwm2m.old.SimpleClient
 
 fun main() {
     val simpleClient = SimpleClient(

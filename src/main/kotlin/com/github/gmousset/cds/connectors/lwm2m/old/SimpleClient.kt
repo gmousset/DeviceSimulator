@@ -1,5 +1,6 @@
-package com.github.gmousset.cds.connectors.lwm2m
+package com.github.gmousset.cds.connectors.lwm2m.old
 
+import com.github.gmousset.cds.connectors.lwm2m.ObjectEnabler
 import org.eclipse.leshan.client.LeshanClientBuilder
 import org.eclipse.leshan.client.californium.endpoint.CaliforniumClientEndpointsProvider
 import org.eclipse.leshan.client.`object`.Security
@@ -42,7 +43,7 @@ class SimpleClient(
         val objectsInitializer = ObjectsInitializer(repository.lwM2mModel)
         objectsInitializer.setInstancesForObject(SECURITY, Security.noSec(server, SERVER_ID))
         objectsInitializer.setInstancesForObject(SERVER, Server(SERVER_ID, SESSION_LIFETIME))
-        objectsInitializer.setInstancesForObject(DEVICE, MyDevice())
+//        objectsInitializer.setInstancesForObject(DEVICE, ObjectEnabler())
         objectsInitializer.setInstancesForObject(LOCATION, RandomizeValuesInstanceEnabler())
         val objectEnablers = objectsInitializer.createAll()
         val leshanClient = LeshanClientBuilder(endpoint)

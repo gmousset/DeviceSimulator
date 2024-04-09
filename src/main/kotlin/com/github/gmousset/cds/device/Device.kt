@@ -1,5 +1,5 @@
 package com.github.gmousset.cds.device
 
-open class Device(
-    private val properties: List<Property<out Any>>
-)
+interface Device {
+    fun getProperties(): List<Property<*>>
+}

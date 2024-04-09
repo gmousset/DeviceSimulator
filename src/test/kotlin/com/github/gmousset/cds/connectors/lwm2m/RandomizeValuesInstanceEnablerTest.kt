@@ -1,5 +1,6 @@
 package com.github.gmousset.cds.connectors.lwm2m
 
+import com.github.gmousset.cds.connectors.lwm2m.old.RandomizeValuesInstanceEnabler
 import io.mockk.mockk
 import org.eclipse.leshan.client.servers.LwM2mServer
 import org.eclipse.leshan.core.model.ObjectModel

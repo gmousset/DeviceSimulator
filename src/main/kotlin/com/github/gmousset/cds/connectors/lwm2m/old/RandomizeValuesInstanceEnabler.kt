@@ -1,4 +1,4 @@
-package com.github.gmousset.cds.connectors.lwm2m
+package com.github.gmousset.cds.connectors.lwm2m.old
 
 import com.github.gmousset.cds.connectors.lwm2m.exception.RangeEnumerationException
 import org.apache.commons.lang3.RandomStringUtils
