@@ -15,53 +15,10 @@ import org.eclipse.leshan.core.model.ObjectModel
 import org.eclipse.leshan.core.model.ResourceModel
 import org.eclipse.leshan.core.response.ReadResponse
 
-class ObjectEnabler(
-//    private val objectModel: ObjectModel
-) : BaseInstanceEnabler() {
+class ObjectEnabler : BaseInstanceEnabler() {
 
     private var propertiesById: Map<Int, Property<*>>? = null
 
-    /*
-    private val objectId = objectModel.id
-    private val propertiesById = this.objectModel.resources.entries.mapNotNull { entry ->
-        val resourceId = entry.key
-        val resourceModel = entry.value
-        val resourcePath = "/$objectId/0/$resourceId"
-        val resourceName = resourceModel.name
-
-        val prop = when (resourceModel.type) {
-            ResourceModel.Type.INTEGER -> LongProperty(resourcePath, resourceName) { RandomValueProvider.getLong() }
-            ResourceModel.Type.FLOAT -> DoubleProperty(
-                resourcePath,
-                resourceName
-            ) { RandomValueProvider.getDouble() }
-
-            ResourceModel.Type.STRING -> StringProperty(
-                resourcePath,
-                resourceName
-            ) { RandomValueProvider.getString() }
-
-            ResourceModel.Type.BOOLEAN -> BooleanProperty(
-                resourcePath,
-                resourceName
-            ) { RandomValueProvider.getBoolean() }
-
-            ResourceModel.Type.OPAQUE -> ByteArrayProperty(
-                resourcePath,
-                resourceName
-            ) { RandomValueProvider.getByteArray() }
-
-            ResourceModel.Type.TIME -> DateProperty(resourcePath, resourceName) { RandomValueProvider.getDate() }
-            else -> null
-        }
-
-        if (prop == null) {
-            null
-        } else {
-            Pair(resourceId, prop)
-        }
-    }.toMap()
-*/
     companion object {
         private const val SUPPORTED_BINDING_AND_MODES = 16
     }
@@ -135,3 +92,4 @@ class ObjectEnabler(
         }
     }
 }
+

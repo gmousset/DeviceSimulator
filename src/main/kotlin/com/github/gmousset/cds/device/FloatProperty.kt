@@ -4,5 +4,4 @@ class FloatProperty(
     name: String,
     description: String?,
     valueProvider: () -> Float
-) : Property<Float>(name, description, valueProvider) {
-}
+) : Property<Float>(name, description, valueProvider)

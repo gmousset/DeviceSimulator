@@ -4,5 +4,4 @@ class IntegerProperty(
     name: String,
     description: String?,
     valueProvider: () -> Int
-) : Property<Int>(name, description, valueProvider) {
-}
+) : Property<Int>(name, description, valueProvider)

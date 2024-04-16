@@ -4,5 +4,4 @@ class BooleanProperty(
     name: String,
     description: String?,
     valueProvider: () -> Boolean
-) : Property<Boolean>(name, description, valueProvider) {
-}
+) : Property<Boolean>(name, description, valueProvider)

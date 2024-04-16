@@ -4,5 +4,4 @@ class ByteArrayProperty(
     name: String,
     description: String?,
     valueProvider: () -> ByteArray
-) : Property<ByteArray>(name, description, valueProvider) {
-}
+) : Property<ByteArray>(name, description, valueProvider)

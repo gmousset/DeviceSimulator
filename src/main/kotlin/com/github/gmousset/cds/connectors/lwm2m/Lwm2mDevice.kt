@@ -44,7 +44,6 @@ class Lwm2mDevice(
                 SECURITY -> objectsInitializer.setInstancesForObject(SECURITY, Security.noSec(server, SERVER_ID))
                 SERVER -> objectsInitializer.setInstancesForObject(SERVER, Server(SERVER_ID, SESSION_LIFETIME))
                 ACCESS_CONTROL -> {}
-//                DEVICE -> objectsInitializer.setInstancesForObject(DEVICE, ObjectEnabler(it))
                 else -> objectsInitializer.setInstancesForObject(it.id, ObjectEnabler())
             }
         }

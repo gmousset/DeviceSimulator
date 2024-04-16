@@ -4,5 +4,4 @@ class DoubleProperty(
     name: String,
     description: String?,
     valueProvider: () -> Double
-) : Property<Double>(name, description, valueProvider) {
-}
+) : Property<Double>(name, description, valueProvider)

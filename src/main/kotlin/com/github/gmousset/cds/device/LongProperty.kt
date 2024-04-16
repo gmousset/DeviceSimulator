@@ -4,5 +4,4 @@ class LongProperty(
     name: String,
     description: String?,
     valueProvider: () -> Long
-) : Property<Long>(name, description, valueProvider) {
-}
+) : Property<Long>(name, description, valueProvider)
