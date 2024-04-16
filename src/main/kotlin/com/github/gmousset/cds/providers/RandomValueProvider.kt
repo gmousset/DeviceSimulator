@@ -10,7 +10,7 @@ class RandomValueProvider {
         fun getLong() = ThreadLocalRandom.current().nextLong()
         fun getFloat() = ThreadLocalRandom.current().nextFloat()
         fun getDouble() = ThreadLocalRandom.current().nextDouble()
-        fun getString() = RandomStringUtils.random(15)
+        fun getString() = RandomStringUtils.randomAlphabetic(15)
         fun getBoolean() = ThreadLocalRandom.current().nextBoolean()
         fun getByteArray() = RandomStringUtils.random(15).toByteArray()
         fun getDate() = Date(ThreadLocalRandom.current().nextLong())

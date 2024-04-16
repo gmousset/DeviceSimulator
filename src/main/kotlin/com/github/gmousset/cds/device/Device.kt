@@ -1,5 +1,5 @@
 package com.github.gmousset.cds.device
 
 interface Device {
-    fun getProperties(): List<Property<*>>
+    fun connect(server: String)
 }

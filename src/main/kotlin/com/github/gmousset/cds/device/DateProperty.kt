@@ -4,6 +4,7 @@ import java.util.Date
 
 class DateProperty(
     name: String,
+    description: String?,
     valueProvider: () -> Date
-) : Property<Date>(name, valueProvider) {
+) : Property<Date>(name, description, valueProvider) {
 }
